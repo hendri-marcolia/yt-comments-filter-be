@@ -87,7 +87,7 @@ pub async fn analyze_comment(comment: &str) -> Result<AnalyzeResponse, CustomErr
             // to check for variations of the keyword
             // For now, we will just check if the keyword is a substring of the comment
             // Normalize the keyword as well
-            if sanitzed_comment.contains(&keyword.to_uppercase()) {
+            if sanitzed_comment.contains(&keyword.to_lowercase()) {
                 println!("Keyword found in cache: {} with confidence {}", keyword, confidence);
                 return Ok(AnalyzeResponse {
                     spam: true,
@@ -100,7 +100,7 @@ pub async fn analyze_comment(comment: &str) -> Result<AnalyzeResponse, CustomErr
 
     let client = reqwest::Client::new();
     let api_response: String;
-    println!("Normalized comment: {}", normalized_comment);
+
     if AI_SERVICE.to_lowercase() == "gemini" {
         // Gemini API call
         // Body : {"system_instruction":{"parts":[{"text":"AI_PROMPT"}]},"contents":[{"parts":[{"text":"COMMENT"}]}],"generationConfig":{"stopSequences":["\n"],"temperature":0.2,"maxOutputTokens":50,"topP":0.5,"topK":3}}
@@ -110,7 +110,7 @@ pub async fn analyze_comment(comment: &str) -> Result<AnalyzeResponse, CustomErr
             .query(&[("key", GEMINI_TOKEN.clone())])
             .body(format!(r#"{{"system_instruction":{{"parts":[{{"text":"{}"}}]}},
                 "contents":[{{"parts":[{{"text":"{}"}}]}}],
-                "generationConfig":{{"stopSequences":["\n"],"temperature":0.2,"maxOutputTokens":50,"topP":0.5,"topK":3}}}}"#, AI_PROMPT.clone(), normalized_comment))
+                "generationConfig":{{"stopSequences":["\n"],"temperature":0.2,"maxOutputTokens":50,"topP":0.5,"topK":3}}}}"#, AI_PROMPT.clone(), comment.replace("\"", "\\\"")))
             .send()
             .await?;
 
@@ -122,7 +122,7 @@ pub async fn analyze_comment(comment: &str) -> Result<AnalyzeResponse, CustomErr
             .post("https://api.deepseek.com/chat/completions")
             .header("authorization", format!("Bearer {}", DEEPSEEK_TOKEN.clone()))
             .header("content-type", "application/json")
-            .body(format!(r#"{{"model": "deepseek-chat","messages": [{{"role": "system","content": "{}"}},{{"role": "user","content": "{}"}}],"stream": false,"max_tokens": 50}}"#, AI_PROMPT.clone(), normalized_comment))
+            .body(format!(r#"{{"model": "deepseek-chat","messages": [{{"role": "system","content": "{}"}},{{"role": "user","content": "{}"}}],"stream": false,"max_tokens": 50}}"#, AI_PROMPT.clone(), comment.replace("\"", "\\\"")))
             .send()
             .await?;
 
