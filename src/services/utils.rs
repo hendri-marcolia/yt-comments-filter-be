@@ -70,7 +70,7 @@ pub fn normalize_fancy_text(input: &str) -> String {
         .nfkd()                                              // Unicode decomposition
         .filter(|c| !('\u{0300}'..='\u{036F}').contains(c)) // Removes combining diacritics
         .filter(|c| c.is_ascii_alphanumeric() || c.is_whitespace())              // Remove non-alphanumerics
-        .flat_map(|c| c.to_lowercase())                     // Lowercase output
+        .flat_map(|c| c.to_uppercase())                     // Lowercase output
         .collect()
 }
 

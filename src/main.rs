@@ -79,7 +79,7 @@ async fn analyze(req: web::Json<analyzer::AnalyzeRequest>, data: web::Data<AppSt
             HttpResponse::Ok().json(response)
         }
         Err(e) => {
-            println!("Error calling DeepSeek API: {}", e);
+            println!("Error calling AI service API: {}", e);
             HttpResponse::InternalServerError().body(e.to_string())
         }
     }
