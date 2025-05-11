@@ -1,0 +1,16 @@
+[package]
+name = "yt-comments-filter-be"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dotenv = "0.15.0"
+reqwest = "0.12.15"
+actix-web = { version = "4" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0.140"
+tokio = { version = "1.45.0", features = ["full"] }
+lazy_static = "1.5.0"
+blake3 = "1.8.2"
+unicode-normalization = "0.1.24"
+actix-cors = "0.7.1"
